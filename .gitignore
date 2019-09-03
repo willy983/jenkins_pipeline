@@ -1,0 +1,20 @@
+tools/cloudforms/cloudforms.hosts
+tools/cloudforms/cloudforms.inventory
+tools/cloudforms/output.json
+tools/*.json
+roles/ansible-cloudforms-modules
+roles/ansible-cloudforms-role
+roles/basic_roles
+__pycache__
+*.py[co]
+*.retry
+*.sw[nop]
+.DS_Store
+.idea
+*.iml
+.vscode
+.venv
+._.DS_Store
+Будет удалено inst_server/vars/
+Будет удалено .gitignore
+Будет удалено jenkins_pipeline.iml
