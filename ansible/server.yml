@@ -1,0 +1,11 @@
+- name: Configure servers
+  hosts: all
+  become: yes
+  gather_facts: true
+  any_errors_fatal: true
+  roles:
+#    - role: inst_servers
+#      server_setup_action: 'user-ssh'
+    - role: inst_servers
+      server_setup_action: 'zabbix-a'
+

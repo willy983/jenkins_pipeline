@@ -1,0 +1,110 @@
+  - name: "install Zabbix-agent from repo"
+    yum:
+      name: http://repo.zabbix.com/zabbix/4.2/rhel/7/x86_64/zabbix-agent-4.2.6-1.el7.x86_64.rpm
+      state: present
+    tags: config-zabbix
+
+  - name: "Install policycoreutils-python"
+    yum:
+      name: policycoreutils-python
+      state: installed
+      update_cache: yes
+
+  - name: "Install sysstat"
+    yum:
+      name: sysstat
+      state: installed
+      update_cache: yes
+
+#  - name: "Get rpm Zabbix"
+#    get_url:
+#      url: "http://repo.zabbix.com/zabbix/3.2/rhel/7/x86_64/zabbix-release-3.2-1.el7.noarch.rpm"
+#      dest: /tmp/zabbix-release-3.2-1.el7.noarch.rpm
+#
+#  - name: "Install Rpm ZAbbix"
+#    yum:
+#      name: /tmp/zabbix-release-3.2-1.el7.noarch.rpm
+#      state: present
+#    tags: config-zabbix
+#    sudo: yes
+
+  - name: "Install zabbix-agent"
+    yum: name=zabbix-agent state=latest
+    tags: config-zabbix
+
+  - name: "Set servername on conf zabbix agent"
+    lineinfile:
+      path: '/etc/zabbix/zabbix_agentd.conf'
+      regexp: '^Server=.*'
+      insertafter: '^# Server='
+      line: 'Server=10.0.10.15'
+    tags: config-zabbix
+
+  - name: "Set ServerActive on conf zabbix agent"
+    lineinfile:
+      path: '/etc/zabbix/zabbix_agentd.conf'
+      regexp: '^ServerActive=.*'
+      insertafter: '^# ServerActive='
+      line: 'ServerActive=10.0.10.15'
+    tags: config-zabbix
+
+  - name: "Set Timeout on conf zabbix agent"
+    lineinfile:
+      path: '/etc/zabbix/zabbix_agentd.conf'
+      regexp: '^Timeout'
+      insertafter: '^# Timeout='
+      line: 'Timeout=30'
+    tags: config-zabbix
+
+  - name: "Set hostname on conf zabbix agent"
+    lineinfile:
+      path: '/etc/zabbix/zabbix_agentd.conf'
+      regexp: '^Hostname=.*'
+      insertafter: '^# Hostname='
+      line: 'Hostname={{ ansible_hostname }}'
+    tags: config-zabbix
+
+  - name: "Set fix on conf zabbix agent services"
+    lineinfile:
+      path: '/usr/lib/systemd/system/zabbix-agent.service'
+      regexp: '^PIDFile='
+      insertafter: '^Restart=on-failure'
+      line: 'PIDFile=/var/run/zabbix/zabbix_agentd.pid'
+    tags: config-zabbix
+
+#  - name: "Allow zabbix_agent to start (SELinux)"
+#    selinux_permissive:
+#      name: zabbix_agent_t
+#      permissive: true
+#
+#  - name: "Allow sysstat to start (SELinux)"
+#    selinux_permissive:
+#      name: sysstat_t
+#      permissive: true
+#    notify: "Start zabbix-agent"
+#
+
+  - name: "Start zabbix-agent"
+    systemd:
+       name: "zabbix-agent"
+       state: started
+       enabled: yes
+    tags: 
+       - config-zabbix
+       - start
+
+  - name: "Stop zabbix-agent"
+    systemd:
+       name: "zabbix-agent"
+       state: stopped
+       enabled: yes
+    tags: 
+       - stop
+
+  - name: "Restart zabbix-agent"
+    systemd:
+       name: "zabbix-agent"
+       state: restarted
+    tags: 
+     - config-zabbix
+     - restart

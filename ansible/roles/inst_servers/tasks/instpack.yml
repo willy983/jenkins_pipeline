@@ -1,0 +1,11 @@
+- name: Download {{ package }} with checksum url (sha256)
+  get_url:
+    url: {{ url_pkg }}{{ package }}
+    dest: /usr/local/src
+    checksum: sha256:{{ sha256_package}}
+  become: true
+  
+- name: Extract {{ package }}tar.gz into /usr/local/src/
+  unarchive:
+    src: 
+    dest: /var/lib/foo  

@@ -1,0 +1,30 @@
+---
+  addinst:
+    - yum-utils 
+    - mc
+    - net-tools
+    - vim 
+    - perf
+    - screen
+    - htop
+    - unzip
+    - nano
+    - wget
+    - telnet
+    - wget
+    - gcc
+    - gcc-c++
+    - flex
+    - bison
+    - cmake3
+    - autoconf
+    - automake
+    - lftp
+    - curl
+    - subversion
+    - screen
+    - dstat
+    - lsof
+    - iptables-services
+    - dpkg
+    - ntp

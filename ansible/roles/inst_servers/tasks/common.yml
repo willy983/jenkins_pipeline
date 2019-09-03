@@ -1,0 +1,58 @@
+---
+
+- name: Add multiple repositories into the same file (1/2)
+  yum_repository:
+    name: epel
+    description: EPEL YUM repo
+    file: external_repos
+    baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+    gpgcheck: no
+
+- name: Common | install dependencies from yum
+  yum:
+    name: '{{ item }}'
+    state: latest
+  update_cache: yes
+  become: true
+  with_items:
+    - "{{ addinst }}"
+
+- name: install the 'Development tools' package group
+  yum:
+    name: "@Development tools"
+    state: present
+
+- name: configure ntp
+  include_vars: "ntp.yml"
+
+- name: Ensure tzdata package is installed (Linux).
+  package:
+    name: "{{ ntp_tzdata_package }}"
+    state: present
+  when: ansible_system == "Linux"
+
+- name: Check if clock file exists.
+  stat: path=/etc/sysconfig/clock
+  register: clock_file
+
+- name: Create clock file if it doesn't exist.
+  template:
+    src: clock.j2
+    dest: /etc/sysconfig/clock
+  when: clock_file.stat.exists == false
+
+- name: Ensure NTP is running and enabled as configured.
+  service:
+    name: "{{ ntp_daemon }}"
+    state: started
+    enabled: true
+  when: ntp_enabled
+
+- name: Ensure NTP is stopped and disabled as configured.
+  service:
+    name: "{{ ntp_daemon }}"
+    state: stopped
+    enabled: false
+  when: not ntp_enabled
+
+
