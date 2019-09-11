@@ -1,0 +1,6 @@
+---
+- name: Update /etc/hosts for use local nexus
+  lineinfile:
+    path: '/etc/hosts'
+    insertafter: 'EOF'
+    line: '10.0.10.15  nexus.sbt-ignite-dev.ru'

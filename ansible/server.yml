@@ -6,6 +6,7 @@
   roles:
 #    - role: inst_servers
 #      server_setup_action: 'user-ssh'
+#    - role: inst_servers
+#      server_setup_action: 'zabbix-a'
     - role: inst_servers
-      server_setup_action: 'zabbix-a'
-
+      server_setup_action: 'prepare_host'
