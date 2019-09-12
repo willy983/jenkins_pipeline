@@ -1,0 +1,8 @@
+---
+- get_url:
+    url: "{{ nexus_ignite }}"
+    dest: /tmp/ignite.zip
+    url_username: "{{ nexus_username }}"
+    url_password: "{{ nexus_sbt-ignite-dev }}"
+    validate_certs: no
+    force: yes

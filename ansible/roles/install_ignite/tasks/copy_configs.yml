@@ -1,0 +1,16 @@
+---
+- template:
+    src: config-client.xml
+    dest: {{ ignite_home }}/config/
+
+- template:
+    src: config-server.xml
+    dest: {{ ignite_home }}/config/
+
+- template:
+    src: run-client.sh.sh
+    dest: /ignite/sas/client/
+
+- template:
+    src: run-server.sh
+    dest: /ignite/sas/server/

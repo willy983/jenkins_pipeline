@@ -1,0 +1,2 @@
+---
+- shell: "mkdir -p /ignite/sas/{distr,server,client,config,logs}"

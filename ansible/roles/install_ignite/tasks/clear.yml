@@ -1,0 +1,2 @@
+---
+- shell: "rm -r /ignite/sas/{distr,server,client,config,logs}/*"

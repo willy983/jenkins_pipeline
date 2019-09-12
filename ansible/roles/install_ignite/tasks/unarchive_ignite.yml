@@ -1,0 +1,5 @@
+---
+- unarchive:
+    src: /tmp/ignite.zip
+    dest: /ignite/sas/distr/
+    remote_src: yes

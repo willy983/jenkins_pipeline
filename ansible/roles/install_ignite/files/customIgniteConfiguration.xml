@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--Конфигурация бина IgniteConfiguration-->
+    <bean id="dplIgniteConfiguration" class="org.apache.ignite.configuration.IgniteConfiguration">
+
+        <property name="metricsLogFrequency"     value="30000"/>
+        <property name="failureDetectionTimeout" value="90000" />
+        <property name="clientFailureDetectionTimeout" value="30000"/>     
+        <property name="autoActivationEnabled" value="false" />
+
+	<property name="rebalanceThreadPoolSize" value="32"/>
+
+        <property name="peerClassLoadingEnabled" value="true"/>
+
+        <property name="binaryConfiguration">
+            <ref bean="dplBinaryConfiguration"/>
+        </property>
+
+        <property name="communicationSpi">
+            <ref bean="dplTcpCommunicationSpi"/>
+        </property>
+
+        <property name="discoverySpi">
+            <ref bean="dplDiscoverySpi"/>
+        </property>
+
+        <property name="connectorConfiguration">
+            <ref bean="dplConnectorConfiguration"/>
+        </property>
+
+        <property name="dataStorageConfiguration">
+            <ref bean="dplDataStorageConfiguration"/>
+        </property>
+
+        <property name="transactionConfiguration">
+            <ref bean="dplTransactionConfiguration"/>
+        </property>
+
+        <property name="atomicConfiguration">
+            <ref bean="dplAtomicConfiguration"/>
+        </property>
+
+        <property name="pluginConfigurations">
+            <list>
+                <ref bean="dplGridGainConfiguration" />
+            </list>
+        </property>
+
+    </bean>
+
+    <!--Конфигурация бина TcpCommunicationSpi-->
+    <bean id="dplTcpCommunicationSpi" class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
+        <property name="sharedMemoryPort" value="-1"/>
+        <property name="idleConnectionTimeout" value="600000"/>
+        <property name="socketWriteTimeout" value="20000"/>
+        <property name="selectorsCount" value="18"/>
+        <property name="connectionsPerNode" value="4"/>
+	<property name="usePairedConnections" value="true" />
+        <property name="messageQueueLimit" value="0"/>
+    </bean>
+
+
+    <!--Конфигурация бина TcpDiscoverySpi-->
+    <bean id="dplDiscoverySpi" class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+        <property name="localPortRange" value="0"/>
+    </bean>
+
+    <!--Конфигурация бина BinaryConfiguration-->
+    <bean id="dplBinaryConfiguration" class="org.apache.ignite.configuration.BinaryConfiguration">
+        <property name="compactFooter" value="true"/>
+    </bean>
+
+    <!--Конфигурация бина ConnectorConfiguration-->
+    <bean id="dplConnectorConfiguration" class="org.apache.ignite.configuration.ConnectorConfiguration">
+        <property name="idleTimeout" value="180000"/>
+    </bean>
+
+    <!-- This class allows defining custom data regions' configurations with various parameters for Apache Ignite page memory (see DataStorageConfiguration. -->
+    <bean id="dplDefaultDataRegionConfiguration" class="org.apache.ignite.configuration.DataRegionConfiguration">
+        <property name="name" value="dpl_mem_plc"/>
+
+        <!-- Sets persistence enabled flag. -->
+        <property name="persistenceEnabled" value="true"/>
+
+        <!-- Настройка initialSize - плохо парсится, такой формат записи в настоящий момент рекомендуемый gg. В случае, проблем с парсингом при запуске - закомментировать initialSize.  -->
+        <property name="maxSize" value="#{592L * 1024 * 1024 * 1024}"/>
+        <property name="metricsEnabled" value="true"/>
+        <property name="metricsRateTimeInterval" value="1000"/>
+        <property name="checkpointPageBufferSize" value="#{16*1024*1024*1024L}"/>
+    </bean>
+
+    <!-- A durable memory configuration for an Apache Ignite node. -->
+    <bean id="dplDataStorageConfiguration" class="org.apache.ignite.configuration.DataStorageConfiguration">
+        <!-- Changes the page size. -->
+        <!-- org.apache.ignite.configuration.DataStorageConfiguration.DFLT_PAGE_SIZE = 4Kb -->
+        <property name="pageSize" value="#{4 * 1024}"/>
+
+        <!-- Overrides configuration of default data region which is created automatically. -->
+        <property name="defaultDataRegionConfiguration">
+            <ref bean="dplDefaultDataRegionConfiguration"/>
+        </property>
+
+        <!-- Sets the checkpoint frequency which is a minimal interval when the dirty pages will be written to the Persistent Store. -->
+        <property name="checkpointFrequency" value="30000"/>
+
+        <!-- Sets a total number of checkpoints to keep in the WAL history. -->
+        <property name="walHistorySize" value="2147483647"/>
+
+        <!-- Sets a path for the WAL archive directory. -->
+        <property name="walArchivePath" value="/gridgain/sas/storage/wal_archive"/>
+
+        <!-- Sets size of a WAL segment. -->
+        <property name="walSegmentSize" value="#{1024*1024*1024}"/>
+
+        <!-- Sets property that defines behavior of wal fsync. -->
+        <property name="walMode" value="LOG_ONLY"/>
+        <!-- Sets WAL buffer size. -->
+        <property name="walBufferSize" value="5242880"/>
+        <!-- Sets flag indicating whether WAL compaction is enabled. -->
+        <property name="walCompactionEnabled" value="True"/>
+    </bean>
+
+
+    <!--Конфигурация бина TransactionConfiguration-->
+    <bean id="dplTransactionConfiguration"  class="org.apache.ignite.configuration.TransactionConfiguration">
+        <property name="defaultTxIsolation" value="READ_COMMITTED"/>
+	<property name="defaultTxTimeout"   value="300000"/>
+	<property name="txTimeoutOnPartitionMapExchange" value="5000"/>
+    </bean>
+
+    <!--Конфигурация для атомарных последовательностей Ignite-->
+    <bean id="dplAtomicConfiguration" class="org.apache.ignite.configuration.AtomicConfiguration">
+        <!--Размер резервирования значений-->
+        <!-- PRB-18128 & PRB-18290 увеличено в 50 раз до прояснения ситуации с сиквенсами в гриде -->
+        <property name="atomicSequenceReserveSize" value="50000"/>
+        <!--Режим работы атомарных кэшей. REPLICATED - реплицируется по всему кластеру на каждый узел-->
+        <property name="cacheMode" value="REPLICATED"/>
+        <!--Общее количество резервных копий кэша на других узлах-->
+        <property name="backups" value="3"/>
+    </bean>
+
+
+    <!--Конфигурация плагина GridGain-->
+    <bean id="dplGridGainConfiguration" class="org.gridgain.grid.configuration.GridGainConfiguration">
+        <property name="rollingUpdatesEnabled" value="true"/>
+        <property name="snapshotConfiguration">
+            <bean class="org.gridgain.grid.configuration.SnapshotConfiguration">
+                <property name="pointInTimeRecoveryEnabled" value="true"/>
+                <property name="snapshotsPath" value="/opt/pprb/server/work/snapshot"/>
+            </bean>
+        </property>
+    </bean>
+</beans>

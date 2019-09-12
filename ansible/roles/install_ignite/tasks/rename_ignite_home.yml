@@ -1,0 +1,2 @@
+---
+- shell: "cd /ignite/sas/distr/ && mv ./* ignite"

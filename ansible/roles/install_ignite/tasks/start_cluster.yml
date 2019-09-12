@@ -1,0 +1,4 @@
+---
+- shell: "sh /ignite/sas/server/startServer.sh"
+
+- shell: "sh /ignite/sas/client/startClient.sh"

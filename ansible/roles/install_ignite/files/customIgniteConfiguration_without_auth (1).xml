@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!--
+                 ВАЖНО! об изменениях:
+        1)  dplDefaultDataRegionConfiguration.maxSize - раньше безусловно перетирался.
+            Сейчас будет использовано значение прописанное в этом файле.
+            Если есть жедание задавать его через конфигуратор - нужно удалить явное задание в dplDefaultDataRegionConfiguration
+
+        2)  persistenceEnabled - теперь настраивается из конфигуратора (по умолчанию отключено).
+            Сделано так потому что включение флага требует задание путей к хранилищу (раньше мог быть рассинхрон настроек)
+
+        3)  dplDefaultDataRegionConfiguration.checkpointPageBufferSize - раньше мог быть переопределен системной пропитей.
+            Сейчас будет использовано значение прописаное в этом файле.
+            Если есть жедание задавать его через конфигуратор - нужно удалить явное задание в dplDefaultDataRegionConfiguration
+    -->
+
+    <import resource="classpath:dplContext.xml" />
+
+    <!-- Устанавливаем пользователей и пароли для SecurityCredentials -->
+        <bean id="server.creds" class="org.apache.ignite.plugin.security.SecurityCredentials">
+        <property name="login" value="gg_server"/>
+        <property name="password" value="qwe123"/>
+        </bean>
+
+        <bean id="snapshot.creds" class="org.apache.ignite.plugin.security.SecurityCredentials">
+        <property name="login" value="gg_snapshot"/>
+        <property name="password" value="qwe123"/>
+        </bean>
+
+        <bean id="visor.creds" class="org.apache.ignite.plugin.security.SecurityCredentials">
+        <property name="login" value="gg_visor"/>
+        <property name="password" value="qwe123"/>
+        </bean>
+
+        <bean id="full.creds" class="org.apache.ignite.plugin.security.SecurityCredentials">
+        <property name="login" value="gg_full"/>
+        <property name="password" value="qwe123"/>
+        </bean>
+
+        <bean id="user.creds" class="org.apache.ignite.plugin.security.SecurityCredentials">
+            <property name="login" value="gg_user"/>
+            <property name="password" value="qwe123"/>
+        </bean>
+
+        <bean id="shapshot.creds" class="org.apache.ignite.plugin.security.SecurityCredentials">
+            <property name="login" value="shapshot"/>
+            <property name="password" value="qwe123"/>
+        </bean>
+
+        <bean id="admin.creds" class="org.apache.ignite.plugin.security.SecurityCredentials">
+            <property name="login" value="gg_admin"/>
+            <property name="password" value="qwe123"/>
+        </bean>
+
+        <bean id="ro.creds" class="org.apache.ignite.plugin.security.SecurityCredentials">
+        <property name="login" value="gg_ro"/>
+        <property name="password" value="qwe123"/>
+        </bean>
+
+<alias name="dplDefaultDataRegionConfiguration" alias="defaultDataRegionConfiguration" />
+
+    <!-- Экземпляр конфигурации -->
+    <bean id="igniteConfig" parent="dplIgniteConfig">
+
+        <!-- 1)	Существенное ускорение ребаланса -->
+        <property name="rebalanceThreadPoolSize" value="8"/>
+
+        <!-- Sets frequency of metrics log print out. -->
+        <!-- org.apache.ignite.configuration.IgniteConfiguration.DFLT_METRICS_LOG_FREQ = 60000 -->
+        <property name="metricsLogFrequency" value="30000"/>
+
+        <!--recomendation 8.5.1-p165-->
+        <property name="networkSendRetryCount" value="1"/>
+
+        <!-- Sets failure detection timeout to use in {@link TcpDiscoverySpi} and {@link TcpCommunicationSpi}. -->
+        <!-- org.apache.ignite.configuration.IgniteConfiguration.DFLT_FAILURE_DETECTION_TIMEOUT = 10000 -->
+        <property name="failureDetectionTimeout" value="30000"/>
+
+        <!-- Sets flag indicating whether the cluster is enabled to activate automatically. -->
+        <property name="autoActivationEnabled" value="false"/>
+
+        <!-- Sets thread pool size to use within grid. -->
+        <!-- org.apache.ignite.configuration.IgniteConfiguration.DFLT_QUERY_THREAD_POOL_SIZE = max(8, AVAILABLE_PROC_CNT) -->
+        <property name="publicThreadPoolSize" value="56"/>
+
+        <!-- Sets system thread pool size to use within grid. -->
+        <!-- org.apache.ignite.configuration.IgniteConfiguration.DFLT_SYSTEM_CORE_THREAD_CNT = max(8, AVAILABLE_PROC_CNT) -->
+        <property name="systemThreadPoolSize" value="56"/>
+
+        <property name="queryThreadPoolSize" value="56"/>
+        <!-- Enables/disables peer class loading. -->
+        <property name="peerClassLoadingEnabled" value="true"/>
+
+        <property name="binaryConfiguration" ref="dplBinaryConfiguration" />
+
+
+        <property name="transactionConfiguration">
+            <ref bean="dplTransactionConfiguration"/>
+        </property>
+
+        <property name="atomicConfiguration">
+            <ref bean="dplAtomicConfiguration"/>
+        </property>
+
+        <property name="consistentId" value="#{systemProperties['IGNITE_CLUSTER_NAME'] + '_' + systemProperties['node.id'].split('\.')[0]}"/>
+
+        <!--
+        <property name="discoverySpi">
+            <bean class="org.apache.ignite.spi.discovery.zk.ZookeeperDiscoverySpi">
+                <property name="zkConnectionString" value="10.116.172.13:2181,10.116.172.14:2181,10.116.172.15:2181"/>
+                <property name="sessionTimeout" value="30000"/>
+            </bean>
+        </property>
+        -->
+
+         <property name="sslContextFactory">
+	        <bean class="org.apache.ignite.ssl.SslContextFactory">
+	        <property name="keyStoreFilePath" value="/opt/pprb/server/config/server.jks"/>
+	        <property name="keyStorePassword" value="qwe123"/>
+ 	        <property name="trustStoreFilePath" value="/opt/pprb/server/config/trust.jks"/>
+	        <property name="trustStorePassword" value="qwe123"/>
+            <property name="cipherSuites" value="TLS_RSA_WITH_NULL_SHA256, TLS_ECDHE_ECDSA_WITH_NULL_SHA, TLS_ECDH_RSA_WITH_NULL_SHA"/>
+	    </bean>
+        </property>
+
+<!-- Аудит -->
+<property name="eventStorageSpi" ref="auditEventListener"/>
+<property name="includeEventTypes">
+    <set>
+        <util:constant static-field="org.gridgain.grid.events.EventType.EVT_AUTHENTICATION_SUCCEEDED"/>
+        <util:constant static-field="org.gridgain.grid.events.EventType.EVT_AUTHENTICATION_FAILED"/>
+        <util:constant static-field="org.gridgain.grid.events.EventType.EVT_AUTHORIZATION_SUCCEEDED"/>
+        <util:constant static-field="org.gridgain.grid.events.EventType.EVT_AUTHORIZATION_FAILED"/>
+        <util:constant static-field="org.apache.ignite.events.EventType.EVT_NODE_JOINED"/>
+        <util:constant static-field="org.apache.ignite.events.EventType.EVT_NODE_LEFT"/>
+        <util:constant static-field="org.apache.ignite.events.EventType.EVT_NODE_FAILED"/>
+        <util:constant static-field="org.apache.ignite.events.EventType.EVT_CACHE_STARTED"/>
+        <!-- <util:constant static-field="org.apache.ignite.events.EventType.EVT_CACHE_STOPPED"/> -->
+    </set>
+</property>
+</bean>
+
+<bean id="mySslContextFactory" class="org.apache.ignite.ssl.SslContextFactory">
+    <property name="keyStoreFilePath" value="/opt/pprb/server/config/server.jks"/>
+    <property name="keyStorePassword" value="qwe123"/>
+    <property name="trustStoreFilePath" value="/opt/pprb/server/config/trust.jks"/>
+    <property name="trustStorePassword" value="qwe123"/>
+    <property name="cipherSuites" value="TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256"/>
+</bean>
+<alias name="mySslContextFactory" alias="sslContextFactory" />
+
+    <!--Конфигурация бина BinaryConfiguration-->
+    <bean id="dplBinaryConfiguration" class="org.apache.ignite.configuration.BinaryConfiguration">
+        <property name="compactFooter" value="true"/>
+    </bean>
+
+    <!--Конфигурация бина TcpCommunicationSpi-->
+    <bean id="dplTcpCommunicationSpi" parent="communicationSpiTemplate">
+        <!-- Sets local port to accept shared memory connections. -->
+        <property name="sharedMemoryPort" value="-1"/>
+
+        <!-- Sets connect timeout used when establishing connection with remote nodes. -->
+        <!-- <property name="connectTimeout" value="20000"/> после GNITE-7648 используем failure detection -->
+
+        <!-- Sets maximum connect timeout. If handshake is not established within connect timeout, then SPI tries to repeat handshake procedure with increased connect timeout. -->
+        <!-- <property name="maxConnectTimeout" value="60000"/> после GNITE-7648 используем failure detection -->
+
+        <!-- Sets maximum number of reconnect attempts used when establishing connection with remote nodes. -->
+        <!-- <property name="reconnectCount" value="2"/>после GNITE-7648 используем failure detection -->
+
+        <!-- Sets maximum idle connection timeout upon which a connection to client will be closed. -->
+        <property name="idleConnectionTimeout" value="60000"/>
+
+        <!-- Sets socket write timeout for TCP connection. -->
+        <property name="socketWriteTimeout" value="30000"/>
+
+        <!-- Sets the count of selectors te be used in TCP server. -->
+        <property name="selectorsCount" value="18"/>
+
+        <!-- Sets number of connections to each remote node. -->
+        <property name="connectionsPerNode" value="4"/>
+
+        <!-- Sets message queue limit for incoming and outgoing messages. -->
+        <property name="messageQueueLimit" value="0"/>
+
+        <property name="usePairedConnections" value="true"/>
+    </bean>
+    <alias name="dplTcpCommunicationSpi" alias="communicationSpi" />
+
+    <!--Конфигурация бина ConnectorConfiguration-->
+    <bean id="dplConnectorConfiguration" parent="connectorConfigTemplate">
+        <property name="idleTimeout" value="180000"/>
+        <property name="sslEnabled" value="true" />
+        <property name="sslClientAuth" value="true" />
+    </bean>
+    <alias name="dplConnectorConfiguration" alias="connectorConfig" />
+
+    <!-- This class allows defining custom data regions' configurations with various parameters for Apache Ignite page memory (see DataStorageConfiguration. -->
+    <bean id="dplDefaultDataRegionConfiguration" parent="defaultDataRegionConfigurationTemplate">
+        <!-- Sets data region name. The name must be non empty and must not be equal to the reserved 'sysMemPlc' one. -->
+        <!-- org.apache.ignite.configuration.DataStorageConfiguration.DFLT_DATA_REG_DEFAULT_NAME = "default" -->
+        <property name="name" value="dpl_mem_plc"/>
+        <property name="metricsEnabled" value="true"/>
+        <property name="metricsRateTimeInterval" value="1000"/>
+
+        <!-- Sets persistence enabled flag. -->
+        <property name="persistenceEnabled" value="true"/>
+
+        <!-- Sets initial memory region size defined by this data region. -->
+        <!-- org.apache.ignite.configuration.DataStorageConfiguration.DFLT_DATA_REGION_INITIAL_SIZE = 256Mb -->
+        <!--<property name="initialSize" value="..."/>-->
+
+        <!-- Sets maximum memory region size defined by this data region. -->
+        <!-- org.apache.ignite.configuration.DataStorageConfiguration.DFLT_DATA_REGION_MAX_SIZE = 0.2 * TotalMemoryAvailable -->
+        <!--<property name="maxSize" value="..."/>-->
+        <!--    <property name="initialSize" value="#{615*1024*1024*1024}"/> -->
+        <property name="maxSize" value="#{600L * 1024 * 1024 * 1024}"/>
+        <property name="checkpointPageBufferSize" value="#{18L * 1024 * 1024 * 1024}"/>
+    </bean>
+    <alias name="dplDefaultDataRegionConfiguration" alias="defaultDataRegionConfiguration" />
+
+
+    <!-- A durable memory configuration for an Apache Ignite node. -->
+    <bean id="dplDataStorageConfigurationExt" parent="dplDataStorageConfigurationTemplate">
+        <!-- Changes the page size. -->
+        <!-- org.apache.ignite.configuration.DataStorageConfiguration.DFLT_PAGE_SIZE = 4Kb -->
+        <property name="pageSize" value="#{4 * 1024}"/>
+
+        <!-- Sets the checkpoint frequency which is a minimal interval when the dirty pages will be written to the Persistent Store. -->
+        <property name="checkpointFrequency" value="60000"/>
+
+        <!-- Sets a total number of checkpoints to keep in the WAL history. -->
+        <property name="walHistorySize" value="2147483647"/>
+
+        <!-- Sets a path for the WAL archive directory. -->
+        <property name="walArchivePath" value="/gridgain/sas/storage/wal_archive"/>
+
+        <!-- Sets size of a WAL segment. -->
+        <property name="walSegmentSize" value="#{1024*1024*1024}"/>
+
+        <!-- Sets property that defines behavior of wal fsync. -->
+        <property name="walMode" value="LOG_ONLY"/>
+        <property name="metricsEnabled" value="True"/>
+        <property name="metricsRateTimeInterval" value="1000"/>
+
+        <!-- Sets WAL buffer size. -->
+        <property name="walBufferSize" value="5242880"/>
+
+        <!-- Sets flag indicating whether WAL compaction is enabled. -->
+        <property name="walCompactionEnabled" value="true"/>
+
+        <property name="concurrencyLevel" value="560"/>
+    </bean>
+    <alias name="dplDataStorageConfigurationExt" alias="dataStorageConfiguration" />
+
+    <!--Конфигурация бина TransactionConfiguration-->
+    <bean id="dplTransactionConfiguration" class="org.apache.ignite.configuration.TransactionConfiguration">
+        <!-- -->
+        <property name="txTimeoutOnPartitionMapExchange" value="5000"/>
+        <!-- Sets default transaction isolation. -->
+        <property name="defaultTxIsolation" value="READ_COMMITTED"/>
+
+        <!-- Sets default transaction timeout in milliseconds. -->
+        <property name="defaultTxTimeout" value="300000"/>
+    </bean>
+
+    <!--Конфигурация для атомарных последовательностей Ignite-->
+    <bean id="dplAtomicConfiguration" class="org.apache.ignite.configuration.AtomicConfiguration">
+        <!--Размер резервирования значений-->
+        <!-- PRB-18128 & PRB-18290 увеличено в 50 раз до прояснения ситуации с сиквенсами в гриде -->
+        <property name="atomicSequenceReserveSize" value="50000"/>
+        <!--Режим работы атомарных кэшей. REPLICATED - реплицируется по всему кластеру на каждый узел-->
+        <property name="cacheMode" value="REPLICATED"/>
+        <!--Общее количество резервных копий кэша на других узлах-->
+        <property name="backups" value="3"/>
+    </bean>
+
+    <!--Конфигурация плагина GridGain-->
+    <bean id="dplGridGainConfiguration" parent="gridGainConfigurationTemplate">
+
+        <!-- Sets rolling updates enabled flag. -->
+        <property name="rollingUpdatesEnabled" value="true"/>
+
+        <!-- Sets snapshot configuration. -->
+        <property name="snapshotConfiguration">
+            <!-- GridGain snapshot configuration. When set, enables snapshot. -->
+            <bean class="org.gridgain.grid.configuration.SnapshotConfiguration">
+                <!-- Sets enable/disable point-in-time. -->
+                <!-- org.gridgain.grid.configuration.SnapshotConfiguration.pointInTimeRecoveryEnabled = false -->
+                <property name="pointInTimeRecoveryEnabled" value="true"/>
+
+                <!-- Sets database snapshot SPI. -->
+                <property name="snapshotsPath" value="/opt/pprb/server/work/snapshot"/>
+            </bean>
+        </property>
+        <property name="authenticator">
+        <bean class="org.gridgain.grid.security.passcode.PasscodeAuthenticator">
+        <property name="aclProvider">
+        <bean class="org.gridgain.grid.security.passcode.AuthenticationAclBasicProvider">
+        <constructor-arg>
+          <map>
+          <entry key-ref="server.creds" value="{defaultAllow:true}"/>
+          <entry key-ref="full.creds" value="{{cache:'*', permissions:[CACHE_READ, CACHE_PUT, CACHE_REMOVE] }, {task:'*', permissions:[TASK_EXECUTE, TASK_CANCEL]}, {system:[CACHE_CREATE, CACHE_DESTROY, JOIN_AS_SERVER, ADMIN_VIEW]}, {service:'*', permissions:[SERVICE_DEPLOY, SERVICE_CANCEL, SERVICE_INVOKE]}, defaultAllow:false}"/>
+          <entry key-ref="user.creds" value="{{cache:'*', permissions:[CACHE_READ, CACHE_PUT, CACHE_REMOVE] }, {task:'*', permissions:[TASK_EXECUTE, TASK_CANCEL]}, {system:[EVENTS_ENABLE, EVENTS_DISABLE, CACHE_CREATE ]}, {service:'*', permissions:[SERVICE_DEPLOY, SERVICE_CANCEL, SERVICE_INVOKE]}, defaultAllow:false}"/>
+          <entry key-ref="snapshot.creds" value="{{system:[ADMIN_OPS]},defaultAllow:false}"/>
+          <entry key-ref="visor.creds" value="{{system:[ADMIN_QUERY, ADMIN_VIEW, ADMIN_CACHE]},defaultAllow:false}"/>
+          <entry key-ref="admin.creds" value="{{system:[ADMIN_VIEW, ADMIN_CACHE, ADMIN_OPS]},defaultAllow:false}"/>
+          <entry key-ref="ro.creds" value="{{cache:'*', permissions:[CACHE_READ] },{task:'*', permissions:[TASK_EXECUTE]},defaultAllow:false}"/>
+          <entry key-ref="shapshot.creds" value="{{system:[ADMIN_OPS]},defaultAllow:false}"/>
+          </map>
+        </constructor-arg>
+        </bean>
+        </property>
+        </bean>
+        </property>
+        <property name="securityCredentialsProvider">
+        <bean class="org.apache.ignite.plugin.security.SecurityCredentialsBasicProvider">
+        <constructor-arg ref="server.creds"/>
+        </bean>
+        </property>
+    </bean>
+    <alias name="dplGridGainConfiguration" alias="gridGainConfiguration"/>
+    
+<!-- АУДИТ -->
+    <bean id="objectFactoryBinder" class="com.sbt.core.envelope.container.api.EnvelopeObjectFactoryBinder"/>
+    <bean id="objectFactory" factory-bean="objectFactoryBinder" factory-method="getInstance"/>
+
+    <bean id="auditMetadataProvider" class="com.sbt.ignite.audit.AuditMetadataProvider"/>
+
+    <bean id="auditEventListener" class="com.sbt.ignite.audit.AuditEventListener">
+        <property name="auditClientFactory" ref="auditClientFactory"/>
+        <!--Шаблон, описывающий формат даты и времени.
+        По дефолту dd.MM.yyyy HH:mm:ss.SSS-->
+        <property name="datePattern" value="dd-MM-yyyy HH:mm:ss"/>
+        <!--Список разрешений, аудит событий авторизации которых будет производиться.
+        По дефолту CACHE_CREATE, CACHE_DESTROY-->
+        <property name="securityPermissions">
+            <set>
+                <value>CACHE_CREATE</value>
+                <value>CACHE_DESTROY</value>
+                <value>ADMIN_CACHE</value>
+                <value>ADMIN_QUERY</value>
+            </set>
+        </property>
+    </bean>
+
+<bean id="auditClientFactory" class="com.sbt.ignite.audit.CustomAuditClientFactoryBean">
+    <constructor-arg ref="auditMetadataProvider"/>
+    <constructor-arg ref="objectFactory"/>
+</bean>
+
+</beans>
