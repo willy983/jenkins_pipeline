@@ -1,0 +1,56 @@
+---
+- name: "Start Install"
+  hosts: all
+  vars_files:
+    - install_ignite/vars/nexus_cred.conf
+    - install_ignite/vars/main.yml
+
+  tasks:
+    - name: "Kill Ignite"
+      shell: "ps aux| grep ignite.sh | awk '{print \$2}' | xargs kill -9 "
+
+
+    - name: "Clear"
+      shell: "rm -r /ignite/sas/{distr,server,client,config,logs}/*"
+
+    - name: "Make directories: /ignite/sas/{distr,server,client,config,logs}"
+      shell: "mkdir -p /ignite/sas/{distr,server,client,config,logs}"
+
+    - name: "Dounload Apache Ignite"
+      get_url:
+        url: "{{ nexus_ignite }}"
+        dest: /tmp/ignite.zip
+        url_username: "{{ nexus_username }}"
+        url_password: "{{ nexus_sbt-ignite-dev }}"
+        validate_certs: no
+        force: yes
+
+
+    - name: "Unarchive Ignite"
+      unarchive:
+        src: /tmp/ignite.zip
+        dest: /ignite/sas/distr/
+        remote_src: ye
+
+    - name: "Rename IGNITE_HOME_DIR"
+      shell: "cd /ignite/sas/distr/ && mv ./* ignite"
+
+    - name: "Copy ignite configs and shell scripts"
+      template:
+        src: config-client.xml
+        dest: {{ ignite_home }}/config/
+
+    - name: "config-server"
+      template:
+        src: config-server.xml
+        dest: {{ ignite_home }}/config/
+
+    - name: "run-client"
+        template:
+        src: run-client.sh
+        dest: /ignite/sas/client/
+
+    - name: "run-server"
+      template:
+        src: run-server.sh
+        dest: /ignite/sas/server/

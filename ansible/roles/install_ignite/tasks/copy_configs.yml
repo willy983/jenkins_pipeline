@@ -8,7 +8,7 @@
     dest: {{ ignite_home }}/config/
 
 - template:
-    src: run-client.sh.sh
+    src: run-client.sh
     dest: /ignite/sas/client/
 
 - template:

@@ -53,7 +53,7 @@ http://www.springframework.org/schema/beans/spring-beans.xsd">
     </bean>
 
     <!--Конфигурация бина TcpCommunicationSpi-->
-    <bean id="dplTcpCommunicationSpi" class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
+    <bean id="dplTcpCommunicationSpi" class="к">
         <property name="sharedMemoryPort" value="-1"/>
         <property name="idleConnectionTimeout" value="600000"/>
         <property name="socketWriteTimeout" value="20000"/>
