@@ -8,5 +8,8 @@
 #      server_setup_action: 'user-ssh'
 #    - role: inst_servers
 #      server_setup_action: 'zabbix-a'
-    - role: inst_servers
-      server_setup_action: 'prepare_host'
+#    - role: inst_servers
+#      server_setup_action: 'prepare_host'
+    - role: install_ignite
+      server_setup_action: 'install'
+

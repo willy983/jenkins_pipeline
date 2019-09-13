@@ -1,0 +1,27 @@
+---
+- name: "Kill Ignite"
+  import_tasks: kill_ignite.yml
+
+- name: "Clear"
+  import_tasks: clear.yml
+
+- name: "Make directories: /ignite/sas/{distr,server,client,config,logs}"
+  import_tasks: mkdir.yml
+
+- name: "Dounload Apache Ignite"
+  vars_files:
+    - vars/cred.conf
+  import_tasks: download.yml
+
+- name: "Unarchive Ignite"
+  import_tasks: unarchive_ignite.yml
+
+- name: "Rename IGNITE_HOME_DIR"
+  import_tasks: rename_ignite_home.yml
+
+- name: "Copy ignite configs and shell scripts"
+  import_tasks: copy_configs.yml
+
+- name: "Start Ignite Cluster"
+  import_tasks: start_cluster.yml
+

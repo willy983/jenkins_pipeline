@@ -2,26 +2,23 @@
 - name: "Start Install"
   hosts: all
   vars_files:
-    - install_ignite/vars/nexus_cred.conf
-    - install_ignite/vars/main.yml
+    - roles/install_ignite/vars/nexus_cred.conf
+    - roles/install_ignite/vars/install.yml
 
   tasks:
-    - name: "Kill Ignite"
-      shell: "ps aux| grep ignite.sh | awk '{print \$2}' | xargs kill -9 "
-
-
     - name: "Clear"
       shell: "rm -r /ignite/sas/{distr,server,client,config,logs}/*"
+      ignore_errors: yes
 
     - name: "Make directories: /ignite/sas/{distr,server,client,config,logs}"
       shell: "mkdir -p /ignite/sas/{distr,server,client,config,logs}"
 
     - name: "Dounload Apache Ignite"
       get_url:
-        url: "{{ nexus_ignite }}"
+        url: https://nexus.sbt-ignite-dev.ru/repository/ignite-apache/org/apache/ignite/apache-ignite/2.8.0-SNAPSHOT/apache-ignite-2.8.0-SNAPSHOT.zip
         dest: /tmp/ignite.zip
-        url_username: "{{ nexus_username }}"
-        url_password: "{{ nexus_sbt-ignite-dev }}"
+        url_username: RyzhovSV
+        url_password: yAD-FQF-fLU-SmM 
         validate_certs: no
         force: yes
 
@@ -30,7 +27,7 @@
       unarchive:
         src: /tmp/ignite.zip
         dest: /ignite/sas/distr/
-        remote_src: ye
+        remote_src: yes
 
     - name: "Rename IGNITE_HOME_DIR"
       shell: "cd /ignite/sas/distr/ && mv ./* ignite"
@@ -38,15 +35,15 @@
     - name: "Copy ignite configs and shell scripts"
       template:
         src: config-client.xml
-        dest: {{ ignite_home }}/config/
+        dest: "{{ ignite_home }}/config/"
 
     - name: "config-server"
       template:
         src: config-server.xml
-        dest: {{ ignite_home }}/config/
+        dest: "{{ ignite_home }}/config/"
 
     - name: "run-client"
-        template:
+      template:
         src: run-client.sh
         dest: /ignite/sas/client/
 

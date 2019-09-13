@@ -1,2 +1,3 @@
 ---
-- shell: "rm -r /ignite/sas/{distr,server,client,config,logs}/*"
+- shell: "rm -rf /ignite/sas/{distr,config,logs}/*"
+  ignore_errors: yes
