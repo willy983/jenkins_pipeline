@@ -1,5 +1,5 @@
 nexus_ignite: "https://nexus.sbt-ignite-dev.ru/repository/ignite-apache/org/apache/ignite/apache-ignite/2.8.0-SNAPSHOT/apache-ignite-2.8.0-SNAPSHOT.zip"
-java_home: /opt/pprb/support/jdk1.8.0_221/
-ignite_home: /opt/pprb/distr/ignite
-config_server: /opt/pprb/distr/ignite/config/config-server.xml
-config_client: /opt/pprb/distr/ignite/config/config-client.xml
+java_home: "/opt/pprb/support/jdk1.8.0_221/"
+ignite_home: "/opt/pprb/distr/ignite"
+config_server: "/opt/pprb/distr/ignite/config/config-server.xml"
+config_client: "/opt/pprb/distr/ignite/config/config-client.xml"
