@@ -1,6 +1,6 @@
 ---
-- name: "Kill Ignite"
-  import_tasks: kill_ignite.yml
+#- name: "Kill Ignite"
+#  import_tasks: kill_ignite.yml
 
 - name: "Clear"
   import_tasks: clear.yml
@@ -10,7 +10,7 @@
 
 - name: "Dounload Apache Ignite"
   vars_files:
-    - vars/cred.conf
+    - vars/cred.conf --ask-vault-pass
   import_tasks: download.yml
 
 - name: "Unarchive Ignite"

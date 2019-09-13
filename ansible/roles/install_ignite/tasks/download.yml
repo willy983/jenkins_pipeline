@@ -1,6 +1,6 @@
 ---
 - get_url:
-    url: "{{ nexus_ignite }}"
+    url: "https://nexus.sbt-ignite-dev.ru/repository/ignite-apache/org/apache/ignite/apache-ignite/2.8.0-SNAPSHOT/apache-ignite-2.8.0-SNAPSHOT.zip"
     dest: /tmp/ignite.zip
     url_username: "{{ nexus_username }}"
     url_password: "{{ nexus_sbt-ignite-dev }}"
