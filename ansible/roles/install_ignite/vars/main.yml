@@ -3,3 +3,4 @@ java_home: "/opt/pprb/support/jdk1.8.0_221/"
 ignite_home: "/ignite/sas/distr/ignite"
 config_server: "/ignite/sas/distr/ignite/config/config-server.xml"
 config_client: "/ignite/sas/distr/ignite/config/config-client.xml"
+force: false
