@@ -8,9 +8,10 @@
 - name: "Make directories: /ignite/sas/{distr,server,client,config,logs}"
   import_tasks: mkdir.yml
 
+- name: "read file vars"
+  include_vars: "vars.yml"
+
 - name: "Dounload Apache Ignite"
-  vars_files:
-    - vars/cred.conf --ask-vault-pass
   import_tasks: download.yml
 
 - name: "Unarchive Ignite"
