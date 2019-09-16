@@ -1,0 +1,3 @@
+---
+- name: "Copy ignite configs and shell scripts"
+  import_tasks: copy_configs.yml
