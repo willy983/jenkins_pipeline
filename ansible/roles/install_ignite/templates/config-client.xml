@@ -29,7 +29,7 @@
 
         <property name="clientMode" value="true"/>
 
-        <property name="consistentId" value="#{'IGNITE_' + systemProperties['node.id']}"/>
+        <property name="consistentId" value="#{'CLIENT_' + {{ host }} }"/>
 
         <property name="workDirectory" value="/ignite/sas/client/"/>
 
