@@ -31,7 +31,7 @@
 
         <property name="consistentId" value="#{'CLIENT_' + {{ host }} }"/>
 
-        <property name="workDirectory" value="/ignite/sas/client/"/>
+        <property name="workDirectory" value="{{ client_work_dir }}"/>
 
         <property name="dataStorageConfiguration">
             <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
