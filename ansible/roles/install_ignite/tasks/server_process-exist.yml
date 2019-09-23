@@ -1,0 +1,8 @@
+---
+- name: Check ignite-server process exists
+  shell: "ps aux | grep ignite | grep -v grep | grep -v client | wc -l"
+  register: check_res
+
+- name:
+  set_fact:
+    server_process_exists: "{{ check_res.stdout != '0' }}"

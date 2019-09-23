@@ -1,8 +1,8 @@
 nexus_ignite: "https://nexus.sbt-ignite-dev.ru/repository/ignite-apache/org/apache/ignite/apache-ignite/2.8.0-SNAPSHOT/apache-ignite-2.8.0-SNAPSHOT.zip"
 java_home: "/opt/pprb/support/jdk1.8.0_221/"
 ignite_home: "/ignite/sas/distr/ignite"
-client_work_dir: "/ignite/sas/client"
-server_work_dir: "/ignite/sas/server"
-config_server: "/ignite/sas/distr/ignite/config/config-server.xml"
-config_client: "/ignite/sas/distr/ignite/config/config-client.xml"
+client_work_dir: "/ignite/sas/client/"
+server_work_dir: "/ignite/sas/server/"
+config_server: "/ignite/sas/config/config-server.xml"
+config_client: "/ignite/sas/config/config-client.xml"
 force: false

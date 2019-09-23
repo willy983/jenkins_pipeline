@@ -2,9 +2,6 @@
 - shell: "rm -rf /ignite/sas/{distr,config,logs}/*"
   ignore_errors: yes
 
-- debug:
-    var: force
-
 - shell: "rm -rf /ignite/sas/{server,client}/*"
   ignore_errors: yes
   when: force  == "true"

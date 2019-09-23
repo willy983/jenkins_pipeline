@@ -1,2 +1,2 @@
 ---
-- shell: "sh /ignite/sas/client/run-client.sh"
+- shell: "sh {{ client_work_dir }}/run-client.sh"

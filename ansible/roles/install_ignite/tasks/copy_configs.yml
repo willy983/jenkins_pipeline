@@ -9,8 +9,8 @@
 
 - template:
     src: run-client.sh
-    dest: /ignite/sas/client/
+    dest: "{{ client_work_dir }}"
 
 - template:
     src: run-server.sh
-    dest: /ignite/sas/server/
+    dest: "{{ server_work_dir }}"

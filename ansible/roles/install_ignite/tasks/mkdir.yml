@@ -1,2 +1,3 @@
 ---
-- shell: "mkdir -p /ignite/sas/{distr,server,client,config,logs}"
+- name: "Make directories: /ignite/sas/{distr,server,client,config,logs}"
+  shell: "mkdir -p /ignite/sas/{distr,server,client,config,logs}"
