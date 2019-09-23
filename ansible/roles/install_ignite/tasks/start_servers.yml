@@ -3,4 +3,4 @@
   import_tasks: server_process-exist.yml
 
 - when: not server_process_exists
-  shell: "sh {{ client_work_dir }}/run-server.sh"
+  shell: "sh {{ server_work_dir }}/run-server.sh"
