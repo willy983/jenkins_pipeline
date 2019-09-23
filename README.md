@@ -1,10 +1,16 @@
 # jenkins_pipeline
 ## branch install_ignite
-Рабочая директория `jenkins_pipeline/ansible`
+Рабочая директория для установки `jenkins_pipeline/ansible`
 
 Установка `ansible-playbook -i hosts/ --vault-password-file=roles/install_ignite/vars/vault_pass_file  server.yml`
 
 Установка с очисткой рабочей директории`ansible-playbook -i hosts/ --vault-password-file=roles/install_ignite/vars/vault_pass_file -e "force=true"  server.yml`
+
+На нодах: /ignite/sas
+- distr - содержит дистрибутив ignite
+- config - серверный и клиентский конфиг
+- server - рабочая директория серверного узла(логи пока тоже здесь)
+- client - рабочая директория клиентского(логи пока тоже здесь)
 
 Переменные `roles/install_ignite/vars/main.yml`
 
@@ -13,6 +19,6 @@
 
 Запуск серверов: `ansible-playbook -i hosts/  -e "server_setup_action=start_servers" server.yml`
 
-Запуск клиентов: `ansible all -i hosts/ -m shell -a "sh /ignite/sas/client/run-client.sh" -f6`
+Запуск клиентов: `ansible-playbook -i hosts/  -e "server_setup_action=start_clients" server.yml`
 
-ansible-playbook -i hosts/  -e "server_setup_action=kill_ignite" server.yml
+Kill ignite: `ansible-playbook -i hosts/  -e "server_setup_action=kill_ignite" server.yml`
