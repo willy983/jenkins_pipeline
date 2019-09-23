@@ -1,11 +1,11 @@
 ---
 - template:
     src: config-client.xml
-    dest: "{{ ignite_home }}/config/"
+    dest: "{{ config_client }}"
 
 - template:
     src: config-server.xml
-    dest: "{{ ignite_home }}/config/"
+    dest: "{{ config_server }}"
 
 - template:
     src: run-client.sh
