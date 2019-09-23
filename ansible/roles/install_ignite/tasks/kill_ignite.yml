@@ -1,3 +1,4 @@
 ---
-- shell: "ps aux| grep ignite | grep -Eo \"^.{20}\" | grep -Eo \"[0-9]{4,10}\""
+#- shell: "ps aux | grep ignite | grep -Eo \"^.{20}\" | grep -Eo \"[0-9]{4,10}\""
+- shell: "ps aux | grep ignite | grep -v grep | awk '{print \$2}' | xargs kill -9"
   ignore_errors: yes
