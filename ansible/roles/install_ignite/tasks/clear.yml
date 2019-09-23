@@ -7,4 +7,4 @@
 
 - shell: "rm -rf /ignite/sas/{server,client}/*"
   ignore_errors: yes
-  when: '{{ force }}' == "true"
+  when: force  == "true"
